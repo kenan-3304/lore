@@ -220,11 +220,13 @@ serve(async (req) => {
 
     // Error handling for DALL-E
     let imageRes = await imageReq();
+    let txt: string | undefined;
     if (!imageRes.ok) {
-      const txt = await imageRes.text();
+      txt = await imageRes.text();
       if (txt.includes("image_generation_user_error")) {
         await new Promise((r) => setTimeout(r, 1200));
         imageRes = await imageReq();
+        if (!imageRes.ok) txt = await imageRes.text();
       }
       if (!imageRes.ok) {
         console.error("Image API:", txt);
